@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Hello World</title>
+	<script src="src/jquery.js"></script>
+	<script src="src/react.js"></script>
+	<script src="src/JSXTransformer.js"></script>
+</head>
+<body>
+	<div id="content"></div>
+	<script type="text/jsx;harmony=true">
+
+		var HelloWorld = React.createClass({
+			render: function(){
+				return (
+					<div>
+						<h1>Helloworld</h1>
+						<HelloForm /><br/>
+						<span className="helloSpan">hello</span>
+					</div>
+
+				);
+			}
+		});
+
+		var HelloForm = React.createClass({
+			handleSubmit: function(e) {
+				e.preventDefault();
+				var name = React.findDOMNode(this.refs.name).value.trim();
+				if(!name) {
+					return;
+				}
+				$.ajax({
+					url: 'api/hello/'+name,
+					dataType: 'json',
+					type: 'GET',
+					success: function(data) {
+						console.log(data);
+						$(".helloSpan").append(" " + data.result);
+						React.findDOMNode(this.refs.name).value = "";
+					}.bind(this),
+					error: function(xhr, status, err) {
+			          console.error(this.props.url, status, err.toString());
+			        }.bind(this)
+				});
+			},
+			render: function() {
+				return (
+					<form onSubmit={this.handleSubmit}>
+						<input type="text" placeholder="Your name" ref="name" />
+						<input type="submit" value="POST" />
+					</form>
+				);
+			}
+		});
+
+	
+
+		React.render(
+			<HelloWorld />,
+			document.getElementById('content')
+			);
+
+	</script>
+</body>
+</html>
